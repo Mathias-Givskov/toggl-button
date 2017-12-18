@@ -564,5 +564,9 @@
   "teamleader.eu": {
     "url": "*://app.teamleader.eu/*",
     "name": "Teamleader"
+  },
+  "production.mcb.dk": {
+    "url": "*://production.mcb.dk/pages/project.asp*,*://production.mcb.dk/pages/task.asp*",
+    "name": "McbProduction"
   }
 }
