@@ -402,6 +402,10 @@ export default {
     name: 'Proworkflow',
     clone: 'true'
   },
+  'production.mcb.dk': {
+    url: '*://production.mcb.dk/*',
+    name: 'McbProduction'
+  },
   'rally1.rallydev.com': {
     url: '*://rally1.rallydev.com/*',
     name: 'RallyDev'
