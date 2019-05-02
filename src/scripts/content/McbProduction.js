@@ -11,7 +11,9 @@ togglbutton.render('td.cell-buttons:not(.toggl)', { observe: true }, function (e
     projectName = 'support';
     tags.push($('#projectAccount option:checked').innerHTML);
   } else {
-    projectName = $('#breadcrumbs > a:last-child').innerHTML;
+    const secondBreadcrumb = $('#breadcrumbs > a:nth-child(2)').innerHTML;
+    if (secondBreadcrumb === 'Projects') { projectName = $('#breadcrumbs > a:nth-child(3)').innerHTML; } else { projectName = secondBreadcrumb; }
+
     tags.push($('#consultant > div.content > div.row-fluid.entity > div > div:nth-child(4) > div.controls.hasText').innerHTML);
   }
 
