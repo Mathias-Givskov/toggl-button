@@ -1,18 +1,42 @@
-/*jslint indent: 2 */
-/*global $: false, document: false, togglbutton: false*/
 'use strict';
 
-togglbutton.render('.wspace-task-view:not(.toggl)', {observe: true}, function (elem) {
-  var link,
-    container = $('.wrike-panel-header-toolbar', elem),
-    titleElem = function () {
-      return $('title').textContent.replace(' - Wrike', '');
+togglbutton.render(
+  '.wspace-task-view:not(.toggl)',
+  { observe: true },
+  function (elem) {
+    const container = $('.wrike-panel-header-toolbar', elem);
+
+    const descriptionText = function () {
+      const urlString = window.location.href;
+      const url = new URL(urlString);
+      // We have to look for the param in a custom hash
+      const hash = url.hash.substr(1);
+      const hashParts = hash.split('&');
+      let taskId = null;
+      for (let i = 0; i < hashParts.length; i++) {
+        const partSplit = hashParts[i].split('=');
+        if (partSplit[0] === 'ot') {
+          taskId = partSplit[1];
+        }
+      }
+
+      const titleElem = $('.title-field-ghost', elem);
+      const titleElemText = titleElem ? titleElem.textContent : 'not found';
+      return `#${taskId} ${titleElemText.trim()}`;
     };
 
-  link = togglbutton.createTimerLink({
-    className: 'wrike',
-    description: titleElem
-  });
+    const projectText = function () {
+      const projectElem = $('.wspace-tag-simple', elem);
+      // We process the project element text content.
+      return projectElem.textContent;
+    };
 
-  container.insertBefore(link, container.firstChild);
-});
+    const link = togglbutton.createTimerLink({
+      className: 'wrike',
+      description: descriptionText,
+      projectName: projectText
+    });
+
+    container.insertBefore(link, container.firstChild);
+  }
+);

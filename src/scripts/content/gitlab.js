@@ -1,45 +1,74 @@
-/*jslint indent: 2, unparam: true*/
-/*global $: false, document: false, togglbutton: false*/
-
 'use strict';
 
-togglbutton.render('.issue-details .detail-page-description:not(.toggl)', {observe: true}, function (elem) {
-  var link, description,
-    numElem = $(".identifier") || $(".breadcrumbs-list li:last-child .breadcrumbs-sub-title"),
-    titleElem = $(".title", elem),
-    projectElem = $(".title .project-item-select-holder") || $(".breadcrumbs-list li:nth-last-child(3) .breadcrumb-item-text");
-  description = titleElem.textContent.trim();
-  if (numElem !== null) {
-    description = numElem.textContent.split(" ").pop().trim() + " " + description;
+togglbutton.render(
+  '.issue-details .detail-page-description:not(.toggl)',
+  { observe: true },
+  function (elem) {
+    const numElem =
+        $('.identifier') ||
+        $('.breadcrumbs-list li:last-child .breadcrumbs-sub-title');
+
+    const titleElem = $('.title', elem);
+
+    const projectElem =
+        $('.title .project-item-select-holder') ||
+        $('.breadcrumbs-list li:nth-last-child(3) .breadcrumb-item-text');
+
+    const actionsElem = $('.detail-page-header-actions');
+    let description = titleElem.textContent.trim();
+    if (numElem !== null) {
+      description =
+        numElem.textContent
+          .split(' ')
+          .pop()
+          .trim() +
+        ' ' +
+        description;
+    }
+
+    const link = togglbutton.createTimerLink({
+      className: 'gitlab',
+      description: description,
+      projectName: projectElem.textContent
+    });
+
+    actionsElem.parentElement.insertBefore(link, actionsElem);
   }
+);
 
-  link = togglbutton.createTimerLink({
-    className: 'gitlab',
-    description: description,
-    projectName: projectElem.textContent
-  });
+togglbutton.render(
+  '.merge-request-details .detail-page-description:not(.toggl)',
+  { observe: true },
+  function (elem) {
+    const numElem =
+        $('.identifier') ||
+        $('.breadcrumbs-list li:last-child .breadcrumbs-sub-title');
+    const titleElem = $('.title', elem);
+    const projectElem =
+        $('.title .project-item-select-holder') ||
+        $('.breadcrumbs-list li:nth-last-child(3) .breadcrumb-item-text');
+    const actionsElem = $('.detail-page-header-actions');
 
-  $(".detail-page-header").appendChild(link);
-});
+    let description = titleElem.textContent.trim();
 
-togglbutton.render('.merge-request-details .detail-page-description:not(.toggl)', {observe: true}, function (elem) {
-  var link, description,
-    numElem = $(".identifier") || $(".breadcrumbs-list li:last-child .breadcrumbs-sub-title"),
-    titleElem = $(".title", elem),
-    projectElem = $(".title .project-item-select-holder") || $(".breadcrumbs-list li:nth-last-child(3) .breadcrumb-item-text");
+    if (numElem !== null) {
+      description =
+        'MR' +
+        numElem.textContent
+          .split(' ')
+          .pop()
+          .trim()
+          .replace('!', '') +
+        '::' +
+        description;
+    }
 
-  description = titleElem.textContent.trim();
+    const link = togglbutton.createTimerLink({
+      className: 'gitlab',
+      description: description,
+      projectName: projectElem.textContent
+    });
 
-  if (numElem !== null) {
-    description = "MR" + numElem.textContent.split(" ").pop().trim().replace("!", "") + "::" + description;
+    actionsElem.parentElement.insertBefore(link, actionsElem);
   }
-
-  link = togglbutton.createTimerLink({
-    className: 'gitlab',
-    description: description,
-    projectName: projectElem.textContent
-  });
-
-  $(".detail-page-header").appendChild(link);
-});
-
+);

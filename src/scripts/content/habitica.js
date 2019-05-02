@@ -1,21 +1,18 @@
-/*jslint indent: 2 */
-/*global $: false, togglbutton: false*/
+'use strict';
 
-(function () {
-  'use strict';
+togglbutton.render(
+  '.daily .tasks-list .task:not(.toggl), .habit .tasks-list .task:not(.toggl), .todo .tasks-list .task:not(.toggl)',
+  { observe: true },
+  function (elem) {
+    const text = $('.task-title', elem).textContent.trim();
+    const container = $('.icons-right', elem);
 
-  togglbutton.render('li.task.daily:not(.toggl), li.task.habit:not(.toggl), li.task.todo:not(.toggl)',
-                     {observe: true}, function (elem) {
-      var link,
-        text = $('.task-text>markdown', elem).textContent.trim(),
-        container = $('.task-meta-controls', elem);
-
-      link = togglbutton.createTimerLink({
-        className: 'habitica',
-        description: text,
-        buttonType: 'minimal'
-      });
-
-      container.appendChild(link);
+    const link = togglbutton.createTimerLink({
+      className: 'habitica',
+      description: text,
+      buttonType: 'minimal'
     });
-}());
+
+    container.prepend(link);
+  }
+);
