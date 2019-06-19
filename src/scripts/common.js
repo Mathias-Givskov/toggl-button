@@ -280,7 +280,7 @@ window.togglbutton = {
   },
 
   toggleBillable: function (visible) {
-    const tabIndex = visible ? '103' : '-1';
+    const tabIndex = visible ? '0' : '-1';
     togglbutton.$billable.setAttribute('tabindex', tabIndex);
     togglbutton.$billable.classList.toggle('no-billable', !visible);
   },
@@ -298,8 +298,8 @@ window.togglbutton = {
 
     const pid = response.entry.pid;
     const tid = response.entry.tid;
-    const editFormHeight = 350;
-    const editFormWidth = 240;
+    const editFormHeight = 300;
+    const editFormWidth = 360;
     const div = document.createElement('div');
     let editForm;
     let togglButtonDescription;
@@ -339,16 +339,6 @@ window.togglbutton = {
       projectAutocomplete.closeDropdown();
       tagAutocomplete.closeDropdown();
       editForm.style.display = 'none';
-    };
-
-    const handler = function (e) {
-      if (
-        !/toggl-button/.test(e.target.className) &&
-        !/toggl-button/.test(e.target.parentElement.className)
-      ) {
-        closeForm();
-        this.removeEventListener('click', handler);
-      }
     };
 
     const submitForm = function (that) {
@@ -458,7 +448,18 @@ window.togglbutton = {
       tagAutocomplete.setWorkspaceId(wid);
     });
 
-    document.addEventListener('click', handler);
+    document
+      .querySelector('#toggl-button-edit-form #toggl-button-project-placeholder')
+      .closest('.Dialog__field')
+      .addEventListener('focus', (e) => {
+        projectAutocomplete.openDropdown();
+      });
+    document
+      .querySelector('#toggl-button-edit-form #toggl-button-tag-placeholder')
+      .closest('.Dialog__field')
+      .addEventListener('focus', (e) => {
+        tagAutocomplete.openDropdown();
+      });
   },
 
   createTimerLink: function (params) {

@@ -26,12 +26,12 @@ export const formatDuration = (start: string | number, stop?: string | number) =
   const seconds = differenceInSeconds(subMinutes(subHours(now, hours), minutes), start);
   const timeValue = (value) => value > 9 ? value : (value > 0 ? '0' + value : '00');
 
-  return `${timeValue(hours)}:${timeValue(minutes)}:${timeValue(seconds)}`;
+  return `${hours}:${timeValue(minutes)}:${timeValue(seconds)}`;
 }
 
 type TimerProps = {
-  entry: TimeEntry | null;
-  project: Project | null;
+  entry: Toggl.TimeEntry | null;
+  project: Toggl.Project | null;
 };
 
 function Timer (props: TimerProps) {
@@ -40,7 +40,7 @@ function Timer (props: TimerProps) {
     : <TimerForm />
 }
 
-function RunningTimer(props: { entry: TimeEntry, project: Project | null }) {
+function RunningTimer(props: { entry: Toggl.TimeEntry, project: Toggl.Project | null }) {
   const { entry, project } = props;
   const tags = (entry.tags || []).join(', ');
 

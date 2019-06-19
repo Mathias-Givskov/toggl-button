@@ -11,13 +11,14 @@ const AutoComplete = function (el, item, elem) {
   this.type = el;
   this.el = document.querySelector('#' + el + '-autocomplete');
   this.filter = document.querySelector('#toggl-button-' + el + '-filter');
-  this.filterClear = this.el.parentNode.querySelector('.filter-clear');
+  this.field = this.el.closest('.Dialog__field');
+  this.overlay = this.field.querySelector('.Popdown__overlay');
   this.placeholderItem = document.querySelector(
     '#toggl-button-' + el + '-placeholder'
   );
   this.placeholderDiv = this.placeholderItem.querySelector('div');
-  this.clearSelected = this.el.querySelector('.' + el + '-clear');
-  this.addLink = this.el.parentNode.querySelector('.add-new-' + el);
+  this.clearSelected = this.field.querySelector('.' + el + '-clear');
+  this.addLink = this.field.querySelector('.add-new-' + el);
   this.elem = elem;
   this.item = item;
   this.lastFilter = '';
@@ -32,19 +33,9 @@ AutoComplete.prototype.addEvents = function () {
 
   that.placeholderItem.addEventListener('click', function (e) {
     setTimeout(function () {
-      that.filter.focus();
+      that.toggleDropdown();
     }, 50);
   });
-
-  window.addEventListener(
-    'focus',
-    function (e) {
-      if (e.target === that.filter) {
-        that.openDropdown();
-      }
-    },
-    true
-  );
 
   that.filter.addEventListener('keydown', function (e) {
     if (e.code === 'Tab') {
@@ -52,7 +43,7 @@ AutoComplete.prototype.addEvents = function () {
     }
     if (e.code === 'Enter') {
       if (
-        that.filter.parentNode.classList.contains('open') &&
+        that.field.classList.contains('open') &&
         !!that.saveSelected
       ) {
         that.saveSelected();
@@ -63,7 +54,7 @@ AutoComplete.prototype.addEvents = function () {
     }
     if (
       e.code === 'Escape' &&
-      that.placeholderItem.parentNode.classList.contains('open')
+      that.field.classList.contains('open')
     ) {
       that.closeDropdown();
       e.stopPropagation();
@@ -75,9 +66,9 @@ AutoComplete.prototype.addEvents = function () {
     that.filterSelection();
   });
 
-  that.filterClear.addEventListener('click', function (e) {
+  that.overlay.addEventListener('click', function (e) {
+    e.stopPropagation();
     that.closeDropdown();
-    e.preventDefault();
   });
 };
 
@@ -96,10 +87,26 @@ AutoComplete.prototype.clearFilters = function () {
   for (i = 0; i < b.length; i++) {
     b[i].classList.remove('tasklist-opened');
   }
+
+  this.updateAddLink && this.updateAddLink();
+};
+
+AutoComplete.prototype.toggleDropdown = function () {
+  if (this.field.classList.contains('open')) {
+    this.closeDropdown();
+  } else {
+    this.openDropdown();
+  }
 };
 
 AutoComplete.prototype.openDropdown = function () {
-  this.filter.parentNode.classList.add('open');
+  if (this.field.classList.contains('open')) {
+    return;
+  }
+  this.field.classList.toggle('open', true);
+  // Avoid trapping focus inside the dropdown field while tabbing around
+  this.field.setAttribute('tabindex', '-1');
+  this.filter.focus();
   this.listItems = this.el.querySelectorAll(this.item);
   this.visibleItems = this.el.querySelectorAll('.' + this.type + '-row');
   this.updateHeight();
@@ -109,20 +116,20 @@ AutoComplete.prototype.closeDropdown = function (t) {
   const that = t || this;
   that.filter.value = '';
   that.el.classList.remove('filtered');
-  that.placeholderItem.parentNode.classList.remove('open');
-  that.placeholderItem.parentNode.classList.remove('add-allowed');
+  that.field.classList.toggle('open', false);
+  if (that.addLink) that.addLink.parentNode.classList.remove('add-allowed');
   that.clearFilters();
+
+  // Delay enabling of tabbing again to avoid trapping focus inside this dropdown
+  // completely when using SHIFT+TAB.
+  setTimeout(() => that.field.setAttribute('tabindex', '0'));
 };
 
 AutoComplete.prototype.updateHeight = function () {
   const bodyRect = document.body.getBoundingClientRect();
-
   const elRect = this.el.getBoundingClientRect();
-
-  let style = 'max-height:auto;';
-
+  let popdownStyle = '';
   let listStyle = 'max-height:auto;';
-
   let calc;
 
   if (bodyRect.bottom > 0 && elRect.bottom + 25 >= bodyRect.bottom) {
@@ -130,11 +137,14 @@ AutoComplete.prototype.updateHeight = function () {
     if (calc < 55) {
       calc = 55;
     }
-    style = 'max-height: ' + calc + 'px;';
-    listStyle = 'max-height: ' + (calc - 25) + 'px;';
+    popdownStyle = 'max-height: ' + calc + 'px;';
+    // Not sure, but probably: 55=filter, 25=??, 24=clear-tags
+    listStyle = 'max-height: ' + (calc - 55 - 25 - 24) + 'px;';
+  } else {
+    return;
   }
 
-  this.el.style = style;
+  this.el.closest('.Popdown__content').style = popdownStyle;
   if (this.type === 'tag') {
     document.querySelector('.tag-list').style = listStyle;
   }
@@ -363,8 +373,8 @@ ProjectAutoComplete.prototype.selectProject = function (
   silent,
   removeTask
 ) {
-  if (elem.classList.contains('item-name')) {
-    elem = elem.parentNode;
+  if (elem.classList.contains('item-name') || elem.classList.contains('tb-project-bullet')) {
+    elem = elem.closest('li') || elem.closest('p'); // project row / no-project row
   }
   if (!elem.classList.contains(this.type + '-row')) {
     if (elem.classList.contains('task-count')) {
@@ -451,14 +461,11 @@ ProjectAutoComplete.prototype.getSelectedProjectByPid = function (pid) {
 
 ProjectAutoComplete.prototype.setProjectBullet = function (pid, tid, el) {
   let project;
-
   const elem = el || this.placeholderItem.querySelector('.tb-project-bullet');
-
   let result;
-
   let task;
 
-  if (!!pid || pid === '0') {
+  if (pid && pid !== '0') {
     project = this.el.querySelector("li[data-pid='" + pid + "']");
     if (project) {
       elem.className = project.querySelector('.tb-project-bullet').className;
@@ -475,6 +482,9 @@ ProjectAutoComplete.prototype.setProjectBullet = function (pid, tid, el) {
       }
       return result;
     }
+  } else {
+    // Reset to default.
+    elem.setAttribute('style', '');
   }
   elem.className = 'tb-project-bullet';
   return '';
@@ -518,14 +528,10 @@ ProjectAutoComplete.prototype.generateLabel = function (select, id, type, tid) {
 
 ProjectAutoComplete.prototype.filterSelection = function () {
   let key;
-
   const val = this.filter.value.toLowerCase();
-
   let row;
-
   let text;
 
-  this.updateHeight();
   if (val === this.lastFilter) {
     return;
   }
@@ -630,19 +636,9 @@ TagAutoComplete.prototype.addEvents = function () {
 
   that.placeholderItem.addEventListener('click', function (e) {
     setTimeout(function () {
-      that.filter.focus();
+      that.toggleDropdown();
     }, 50);
   });
-
-  window.addEventListener(
-    'focus',
-    function (e) {
-      if (e.target === that.filter) {
-        that.openDropdown();
-      }
-    },
-    true
-  );
 
   this.el.addEventListener('click', function (e) {
     e.stopPropagation();
@@ -669,16 +665,16 @@ TagAutoComplete.prototype.addEvents = function () {
     }
   });
 
-  this.filterClear.addEventListener('click', function (e) {
+  that.overlay.addEventListener('click', function (e) {
+    e.stopPropagation();
     that.closeDropdown();
-    e.preventDefault();
   });
 
-  this.clearSelected.addEventListener('click', function (e) {
+  this.clearSelected && this.clearSelected.addEventListener('click', function (e) {
     that.clearSelectedTags();
   });
 
-  this.addLink.addEventListener('click', function (e) {
+  this.addLink && this.addLink.addEventListener('click', function (e) {
     that.addNew();
   });
 };
@@ -807,15 +803,16 @@ TagAutoComplete.prototype.filterSelection = function () {
       }
     }
   }
-  this.updateAddLink();
+  this.updateAddLink(val);
 };
 
-TagAutoComplete.prototype.updateAddLink = function (e) {
+TagAutoComplete.prototype.updateAddLink = function (filterValue = '') {
   if (this.addLink) {
-    if (this.exactMatch) {
-      this.placeholderItem.parentNode.classList.remove('add-allowed');
+    if (this.exactMatch || filterValue === '') {
+      this.addLink.parentNode.classList.remove('add-allowed');
     } else {
-      this.placeholderItem.parentNode.classList.add('add-allowed');
+      this.addLink.parentNode.classList.add('add-allowed');
+      this.addLink.querySelector('span').textContent = filterValue;
     }
   }
 };

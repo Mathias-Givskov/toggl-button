@@ -1,10 +1,11 @@
-const path = require('path');
-const fs = require('fs');
-const CleanPlugin = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
+const fs = require('fs');
+const path = require('path');
 const { BugsnagSourceMapUploaderPlugin } = require('webpack-bugsnag-plugins');
+const { CleanWebpackPlugin: CleanPlugin } = require('clean-webpack-plugin');
 const { EnvironmentPlugin } = require('webpack');
+
 const log = require('webpack-log')({ name: 'wds' });
 const pkg = require('./package.json');
 
@@ -28,13 +29,14 @@ const config = f => (
   return f(env);
 };
 
-module.exports = config(async ({ development, bugsnagApiKey, production, release, version }) => ({
+module.exports = config(({ development, bugsnagApiKey, production, release, version }) => ({
   target: 'web',
   context: path.resolve(__dirname, 'src'),
   devtool: 'source-map',
   entry: {
     ...entry('background'),
     ...entry('common'),
+    ...entry('login', 'ts'),
     ...entry('popup'),
     ...entry('settings'),
     ...entryContentScripts()
@@ -45,6 +47,9 @@ module.exports = config(async ({ development, bugsnagApiKey, production, release
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx']
+  },
+  node: {
+    global: false
   },
   module: {
     rules: [
@@ -67,12 +72,13 @@ module.exports = config(async ({ development, bugsnagApiKey, production, release
   plugins: [
     new EnvironmentPlugin({
       API_URL: 'https://toggl.com/api',
+      TOGGL_WEB_HOST: 'https://toggl.com',
       BUGSNAG_API_KEY: bugsnagApiKey,
       DEBUG: development,
       GA_TRACKING_ID: 'UA-3215787-22',
       VERSION: version
     }),
-    new CleanPlugin([path.resolve(__dirname, 'dist')]),
+    new CleanPlugin(),
     new CopyPlugin([
       ...copy({
         from: 'html/',
@@ -136,9 +142,9 @@ module.exports = config(async ({ development, bugsnagApiKey, production, release
   ].filter(Boolean)
 }));
 
-function entry (name) {
+function entry (name, ext = 'js') {
   return {
-    [`scripts/${name}`]: `./scripts/${name}.js`
+    [`scripts/${name}`]: `./scripts/${name}.${ext}`
   };
 }
 

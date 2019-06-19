@@ -1,3 +1,174 @@
+# [1.38.0](https://github.com/toggl/toggl-button/compare/1.37.4...1.38.0) (2019-06-17)
+
+
+### Bug Fixes
+
+* **package:** Apply npm audit fixes ([b911b44](https://github.com/toggl/toggl-button/commit/b911b44))
+* **package:** Move misplaced dependencies ([ab997e2](https://github.com/toggl/toggl-button/commit/ab997e2))
+
+
+### Features
+
+* **npm:** prefer exact version when adding dependencies ([a05c844](https://github.com/toggl/toggl-button/commit/a05c844))
+
+## [1.37.4](https://github.com/toggl/toggl-button/compare/1.37.3...1.37.4) (2019-06-10)
+
+
+### Bug Fixes
+
+* **analytics:** Fix client ID not being sent in usage statistics ([4c9fa5a](https://github.com/toggl/toggl-button/commit/4c9fa5a))
+
+## [1.37.3](https://github.com/toggl/toggl-button/compare/1.37.2...1.37.3) (2019-06-03)
+
+
+### Bug Fixes
+
+* **jira:** Fix timer descriptions in Jira ([4e36c6f](https://github.com/toggl/toggl-button/commit/4e36c6f))
+
+## [1.37.2](https://github.com/toggl/toggl-button/compare/1.37.1...1.37.2) (2019-05-28)
+
+
+### Bug Fixes
+
+* **trello:** Trello integration when the 'Move' button is missing ([c3f6976](https://github.com/toggl/toggl-button/commit/c3f6976)), closes [#1423](https://github.com/toggl/toggl-button/issues/1423)
+
+## [1.37.1](https://github.com/toggl/toggl-button/compare/1.37.0...1.37.1) (2019-05-28)
+
+
+### Bug Fixes
+
+* **build:** Stop webpack from using eval ([4a4a8b5](https://github.com/toggl/toggl-button/commit/4a4a8b5)), closes [#1427](https://github.com/toggl/toggl-button/issues/1427)
+
+# [1.37.0](https://github.com/toggl/toggl-button/compare/1.36.2...1.37.0) (2019-05-24)
+
+
+### Bug Fixes
+
+* **fibery:** change selector to grab description in more generic way ([f0bb547](https://github.com/toggl/toggl-button/commit/f0bb547))
+
+
+### Features
+
+* **fibery:** Fibery Integration ([2852c57](https://github.com/toggl/toggl-button/commit/2852c57)), closes [#1411](https://github.com/toggl/toggl-button/issues/1411)
+
+## [1.36.2](https://github.com/toggl/toggl-button/compare/1.36.1...1.36.2) (2019-05-24)
+
+
+### Bug Fixes
+
+* **popup:** Fix content popup layout breaking due to leaking button styles ([de22c4e](https://github.com/toggl/toggl-button/commit/de22c4e)), closes [#1415](https://github.com/toggl/toggl-button/issues/1415)
+* **rememberthemilk:** Fix errors and conform to styleguide in RememberTheMilk ([f269344](https://github.com/toggl/toggl-button/commit/f269344))
+
+## [1.36.1](https://github.com/toggl/toggl-button/compare/1.36.0...1.36.1) (2019-05-22)
+
+
+### Bug Fixes
+
+* **youtrack:** Fix agile board buttons in YouTrack ([28d1ec0](https://github.com/toggl/toggl-button/commit/28d1ec0)), closes [#1364](https://github.com/toggl/toggl-button/issues/1364)
+* **youtrack:** Update Youtrack to conform to multi-button styleguide ([0661989](https://github.com/toggl/toggl-button/commit/0661989))
+
+# [1.36.0](https://github.com/toggl/toggl-button/compare/1.35.6...1.36.0) (2019-05-21)
+
+
+### Features
+
+* **settings:** Show review prompt to active users ([c61f3c5](https://github.com/toggl/toggl-button/commit/c61f3c5)), closes [#1295](https://github.com/toggl/toggl-button/issues/1295)
+
+## [1.35.6](https://github.com/toggl/toggl-button/compare/1.35.5...1.35.6) (2019-05-20)
+
+
+### Bug Fixes
+
+* **popup:** Fix duration input interval living on in the background ([f3423d5](https://github.com/toggl/toggl-button/commit/f3423d5))
+* **popup:** Large project-names hide continue button ([f7282a1](https://github.com/toggl/toggl-button/commit/f7282a1))
+* **popup:** Project selection ([cb74adb](https://github.com/toggl/toggl-button/commit/cb74adb))
+
+## [1.35.5](https://github.com/toggl/toggl-button/compare/1.35.4...1.35.5) (2019-05-20)
+
+
+### Bug Fixes
+
+* **jira:** Fix Jira kanban board buttons ([9f878bb](https://github.com/toggl/toggl-button/commit/9f878bb)), closes [#1408](https://github.com/toggl/toggl-button/issues/1408)
+
+## [1.35.4](https://github.com/toggl/toggl-button/compare/1.35.3...1.35.4) (2019-05-14)
+
+
+### Bug Fixes
+
+* **wrike:** Fix errors breaking the Wrike integration ([13f683c](https://github.com/toggl/toggl-button/commit/13f683c)), closes [#1388](https://github.com/toggl/toggl-button/issues/1388)
+
+## [1.35.3](https://github.com/toggl/toggl-button/compare/1.35.2...1.35.3) (2019-05-14)
+
+
+### Bug Fixes
+
+* Fix possible type error when fetching user time entries ([bcb8ca8](https://github.com/toggl/toggl-button/commit/bcb8ca8))
+
+## [1.35.2](https://github.com/toggl/toggl-button/compare/1.35.1...1.35.2) (2019-05-14)
+
+
+### Bug Fixes
+
+* **popup:** Fix long project names breaking layout in edit form field ([c89c377](https://github.com/toggl/toggl-button/commit/c89c377))
+* **popup:** Fix long project names breaking task layout of projects dropdown ([f632a05](https://github.com/toggl/toggl-button/commit/f632a05)), closes [#1400](https://github.com/toggl/toggl-button/issues/1400)
+
+## [1.35.1](https://github.com/toggl/toggl-button/compare/1.35.0...1.35.1) (2019-05-14)
+
+
+### Bug Fixes
+
+* **popup:** Fix tab shortcuts in the edit form ([0c6594d](https://github.com/toggl/toggl-button/commit/0c6594d)), closes [#1402](https://github.com/toggl/toggl-button/issues/1402)
+
+# [1.35.0](https://github.com/toggl/toggl-button/compare/1.34.1...1.35.0) (2019-05-09)
+
+
+### Bug Fixes
+
+* **nozbe:** Prevent style-leak ([d38bfa7](https://github.com/toggl/toggl-button/commit/d38bfa7)), closes [#1397](https://github.com/toggl/toggl-button/issues/1397)
+
+
+### Features
+
+* **nozbe:** Add button to task list ([a361965](https://github.com/toggl/toggl-button/commit/a361965))
+
+## [1.34.1](https://github.com/toggl/toggl-button/compare/1.34.0...1.34.1) (2019-05-08)
+
+
+### Bug Fixes
+
+* **core:** Toggl URL check ([f6faa0a](https://github.com/toggl/toggl-button/commit/f6faa0a)), closes [#1393](https://github.com/toggl/toggl-button/issues/1393)
+
+# [1.34.0](https://github.com/toggl/toggl-button/compare/1.33.0...1.34.0) (2019-05-07)
+
+
+### Features
+
+* **popup:** Allow human duraiton input in edit form ([1992f84](https://github.com/toggl/toggl-button/commit/1992f84))
+* **popup:** New timer form layout in toolbar popup and content popup ([b19cc46](https://github.com/toggl/toggl-button/commit/b19cc46))
+* **popup:** Scroll to top after continuing an entry ([9088c11](https://github.com/toggl/toggl-button/commit/9088c11))
+
+# [1.33.0](https://github.com/toggl/toggl-button/compare/1.32.0...1.33.0) (2019-05-07)
+
+
+### Bug Fixes
+
+* **toggl:** Use browser.runtime instead browser.extension ([1f33501](https://github.com/toggl/toggl-button/commit/1f33501))
+
+
+### Features
+
+* **login:** Add signup option ([6047475](https://github.com/toggl/toggl-button/commit/6047475))
+* **login:** Render new login-view to popup ([a232b39](https://github.com/toggl/toggl-button/commit/a232b39))
+* **login:** Show logged in user's info in settings ([30f2bfb](https://github.com/toggl/toggl-button/commit/30f2bfb))
+* **login:** Show login page on install/update if logged out ([33fcd0d](https://github.com/toggl/toggl-button/commit/33fcd0d))
+
+# [1.32.0](https://github.com/toggl/toggl-button/compare/1.31.1...1.32.0) (2019-05-06)
+
+
+### Features
+
+* Set uninstall URL to feedback page ([37abe36](https://github.com/toggl/toggl-button/commit/37abe36)), closes [#1293](https://github.com/toggl/toggl-button/issues/1293)
+
 ## [1.31.1](https://github.com/toggl/toggl-button/compare/1.31.0...1.31.1) (2019-04-25)
 
 

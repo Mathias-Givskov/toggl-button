@@ -1,6 +1,6 @@
+import browser from 'webextension-polyfill';
 import bugsnagClient from './bugsnag';
 import storedOrigins from '../origins';
-const browser = require('webextension-polyfill');
 
 const ORIGINS_KEY = 'TogglButton-origins';
 
@@ -34,7 +34,9 @@ const DEFAULT_SETTINGS = {
 };
 
 const LOCAL_ONLY = {
-  [ORIGINS_KEY]: true
+  [ORIGINS_KEY]: true,
+  timeEntriesTracked: true,
+  dismissedReviewPrompt: true
 };
 
 function isLocalOnly (key) {
@@ -67,6 +69,9 @@ export default class Db {
   }
 
   async getOriginFileName (domain) {
+    if (process.env.DEBUG && domain.endsWith('toggl.space')) {
+      domain = 'toggl.com';
+    }
     let origin = await this.getOrigin(domain);
     const origins = await this.getAllOrigins();
 
@@ -177,7 +182,7 @@ export default class Db {
       : key;
 
     if (isLocalOnly(key)) {
-      return this.getLocalCollection(key);
+      return this.getLocal(key);
     }
 
     return browser.storage.sync.get(options)
@@ -251,15 +256,12 @@ export default class Db {
       });
   }
 
-  getLocalCollection (key) {
-    let collection = localStorage.getItem(key);
+  getLocal (key) {
+    const collection = localStorage.getItem(key);
     if (!collection) {
-      collection = {};
-    } else {
-      collection = JSON.parse(collection);
+      return null;
     }
-
-    return collection;
+    return JSON.parse(collection);
   }
 
   load (setting, defaultValue) {
@@ -287,6 +289,11 @@ export default class Db {
     if (c && callback !== null) {
       callback();
     }
+  }
+
+  async bumpTrackedCount () {
+    const timeEntriesTracked = await this.get('timeEntriesTracked') || 0;
+    return this.set('timeEntriesTracked', timeEntriesTracked + 1);
   }
 
   resetAllSettings () {

@@ -1,11 +1,15 @@
+import browser from 'webextension-polyfill';
+
 import TogglOrigins from './origins';
 import bugsnagClient from './lib/bugsnag';
-const browser = require('webextension-polyfill');
+import { getStoreLink, getUrlParam, isActiveUser } from './lib/utils';
 
 let TogglButton = browser.extension.getBackgroundPage().TogglButton;
 const ga = browser.extension.getBackgroundPage().ga;
 const db = browser.extension.getBackgroundPage().db;
 const FF = navigator.userAgent.indexOf('Chrome') === -1;
+
+const DEFAULT_TAB = 'general';
 
 const replaceContent = function (parentSelector, html) {
   const container = document.querySelector(parentSelector);
@@ -21,6 +25,9 @@ if (FF) {
 }
 
 document.querySelector('#version').textContent = process.env.VERSION;
+document.querySelector('#review-prompt a').href = getStoreLink();
+document.querySelector('#review-prompt a').addEventListener('click', dismissReviewPrompt);
+document.querySelector('#close-review-prompt').addEventListener('click', dismissReviewPrompt);
 
 const Settings = {
   $startAutomatically: null,
@@ -46,6 +53,7 @@ const Settings = {
   $sendErrorReports: null,
   $enableAutoTagging: null,
   $resetAllSettings: null,
+  $loginInfo: document.querySelector('#login-info'),
   $logOut: document.querySelector('#log-out'),
   $syncData: document.querySelector('#sync-data'),
   showPage: async function () {
@@ -74,6 +82,8 @@ const Settings = {
       const sendErrorReports = await db.get('sendErrorReports');
       const stopAtDayEnd = await db.get('stopAtDayEnd');
       const dayEndTime = await db.get('dayEndTime');
+
+      Settings.$loginInfo.textContent = TogglButton.$user.email;
 
       document.querySelector('#nag-nanny-interval').value = nannyInterval / 60000;
       Settings.$pomodoroVolume.value = volume;
@@ -152,12 +162,12 @@ const Settings = {
     }
   },
   fillDefaultProject: async function () {
-    const projects = db.getLocalCollection('projects');
+    const projects = db.getLocal('projects') || {};
     const hasProjects = Object.keys(projects).length > 0;
 
     if (hasProjects && !!TogglButton.$user) {
       const defaultProject = await db.getDefaultProject();
-      const clients = db.getLocalCollection('clients');
+      const clients = db.getLocal('clients') || {};
 
       const html = document.createElement('select');
       html.id = 'default-project';
@@ -649,6 +659,10 @@ document.addEventListener('DOMContentLoaded', async function (e) {
       db.set('show-permissions-info', 0);
     }
 
+    // Change active tab if present in search param
+    const activeTabParam = getUrlParam(document.location, 'tab');
+    changeActiveTab(activeTabParam || DEFAULT_TAB);
+
     document.querySelector('body').style.display = 'flex';
 
     Settings.showPage();
@@ -749,14 +763,11 @@ document.addEventListener('DOMContentLoaded', async function (e) {
       Settings.saveSetting(rememberPer, 'change-remember-project-per');
     });
 
-    document.querySelectorAll('.tab-links .tab-link').forEach(tab =>
-      tab.addEventListener('click', function (e) {
-        const index = [...e.target.parentElement.children].indexOf(e.target);
-
-        Settings.saveSetting(index, 'update-settings-active-tab');
-        changeActiveTab(index);
-      })
-    );
+    document.querySelector('.tab-links').addEventListener('click', e => {
+      const tabLink = e.target.closest('.tab-link');
+      const selectedTab = tabLink.dataset.tab;
+      changeActiveTab(selectedTab);
+    });
 
     Settings.$pomodoroVolume.addEventListener('input', function (e) {
       Settings.$pomodoroVolumeLabel.textContent = e.target.value + '%';
@@ -913,6 +924,11 @@ document.addEventListener('DOMContentLoaded', async function (e) {
     });
 
     Settings.loadSitesIntoList();
+
+    const shouldShowReviewPrompt = await isActiveUser(db);
+    if (shouldShowReviewPrompt) {
+      showReviewPrompt();
+    }
   } catch (err) {
     browser.runtime.sendMessage({
       type: 'error',
@@ -922,11 +938,28 @@ document.addEventListener('DOMContentLoaded', async function (e) {
   }
 });
 
-function changeActiveTab (index) {
+function changeActiveTab (name) {
   document.querySelectorAll('.active').forEach(e => {
     e.classList.remove('active');
   });
 
-  document.querySelector('.tabs').children[index].classList.add('active');
-  document.querySelector('.tab-links').children[index].classList.add('active');
+  const tabEls = document.querySelectorAll(`[data-tab="${name}"]`);
+  tabEls.forEach(e => e.classList.add('active'));
+
+  if (tabEls.length === 0) {
+    console.error(new Error(`changeActiveTab: Invalid tab name: ${name}`));
+  }
+}
+
+async function showReviewPrompt () {
+  const dismissedReviewPrompt = await db.get('dismissedReviewPrompt');
+  if (dismissedReviewPrompt) {
+    return;
+  }
+  document.body.dataset.showReviewBanner = true;
+}
+
+function dismissReviewPrompt () {
+  document.body.dataset.showReviewBanner = false;
+  db.set('dismissedReviewPrompt', true);
 }
