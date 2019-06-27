@@ -9,12 +9,12 @@ togglbutton.render('td.cell-buttons:not(.toggl)', { observe: true }, function (e
   const path = window.location.pathname;
   if (path.indexOf('support.asp') > 0) {
     projectName = 'support';
-    tags.push($('#projectAccount option:checked').innerHTML);
+    tags.push($('#projectAccount option:checked').innerText);
   } else {
-    const secondBreadcrumb = $('#breadcrumbs > a:nth-child(2)').innerHTML;
-    if (secondBreadcrumb === 'Projects') { projectName = $('#breadcrumbs > a:nth-child(3)').innerHTML; } else { projectName = secondBreadcrumb; }
+    const secondBreadcrumb = $('#breadcrumbs > a:nth-child(2)').innerText;
+    if (secondBreadcrumb === 'Projects') { projectName = $('#breadcrumbs > a:nth-child(3)').innerText; } else { projectName = secondBreadcrumb; }
 
-    tags.push($('#consultant > div.content > div.row-fluid.entity > div > div:nth-child(4) > div.controls.hasText').innerHTML);
+    tags.push($('#consultant > div.content > div.row-fluid.entity > div > div:nth-child(4) > div.controls.hasText').innerText);
   }
 
   const description = $('div.top-header>h4').innerText;
